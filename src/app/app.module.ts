@@ -4,7 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 import { removeNgStyles, createNewHosts } from '@angularclass/hmr';
-
+import { DataService } from './shared/services/data.service';
+import { ConfigService } from './shared/utils/config.service';
+import { ItemsService } from './shared/utils/items.service';
 /*
  * Platform and Environment providers/directives/pipes
  */
@@ -21,6 +23,9 @@ import { NoContent } from './no-content';
 // Application wide providers
 const APP_PROVIDERS = [
   ...APP_RESOLVER_PROVIDERS,
+  DataService,
+  ConfigService,
+  ItemsService,
   AppState
 ];
 

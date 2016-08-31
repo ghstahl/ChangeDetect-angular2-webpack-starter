@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
+import { Component,ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { DataService} from '../shared/services/data.service';
+import { ItemsService} from '../shared/utils/items.service';
+import { ConfigService } from '../shared/utils/config.service';
+import {IUser} from "../shared/interfaces";
 /*
  * We're loading this component asynchronously
  * We are using some magic with es6-promise-loader that will wrap the module with a Promise
@@ -14,6 +18,23 @@ console.log('`About` component loaded asynchronously');
   `],
   template: `
     <h1>About</h1>
+    <div  >
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let user of users">
+                <td> {{user.id}}</td>
+                <td>{{user.name}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    </div>
     <div>
       For hot module reloading run
       <pre>npm run start:hmr</pre>
@@ -28,8 +49,13 @@ console.log('`About` component loaded asynchronously');
 })
 export class About {
   localState;
-  constructor(public route: ActivatedRoute) {
-
+  private users:IUser[];
+  private userLoaded:boolean;
+  constructor(public route: ActivatedRoute,
+              private ref: ChangeDetectorRef,
+              private dataService:DataService,
+              private itemsService: ItemsService,
+              private configService: ConfigService) {
   }
 
   ngOnInit() {
@@ -39,7 +65,16 @@ export class About {
         // your resolved data from route
         this.localState = data.yourData;
       });
-
+      this.dataService.getUsers()
+      .subscribe((res: IUser[]) => {
+          this.users = this.itemsService.getSerialized<IUser[]>(res);
+          this.userLoaded = true;
+          console.log(this.users);
+       //  this.ref.detectChanges();
+        },
+        error => {
+          console.log('Failed to load schedule. ' + error);
+        });
     console.log('hello `About` component');
     // static data that is bundled
     // var mockData = require('assets/mock-data/mock-data.json');
